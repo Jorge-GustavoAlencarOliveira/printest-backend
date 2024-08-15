@@ -1,0 +1,90 @@
+ID do aplicativo: 3601117921978914
+Chave secreta: 7uGns1s3bpGUq5sqTYMhmH7ugslVJV5p
+uri redirect: https://pscip.vercel.app/
+code=TG-669c3b6761d6520001957d77-237018159
+
+shipping_id: 43636930013
+
+https://auth.mercadolivre.com.br/authorization?response_type=code&client_id=3601117921978914&redirect_uri=https://printest.vercel.app/integration
+
+// User test
+{
+  "id": 1913378218,
+  "email": "test_user_580368510@testuser.com",
+  "nickname": "TESTUSER580368510",
+  "site_status": "active",
+  "password": "4EPbUMOdsD"
+}
+
+{
+  "id": 1913541284,
+  "email": "test_user_909841676@testuser.com",
+  "nickname": "TESTUSER909841676",
+  "site_status": "active",
+  "password": "PpDp5pDqGX"
+}
+
+
+{
+  "id": 3601117921978914,
+  "site_id": "MLB",
+  "name": "testeImpressora",
+  "description": "App para impressão de notas de vendas",
+  "thumbnail": "https://http2.mlstatic.com/storage/platsec-applications-dev-mngr/prod-applications-fe/1721513007412_237018159.png",
+  "catalog_product_id": null,
+  "origin": "ML",
+  "item_id": null,
+  "price": null,
+  "currency_id": null,
+  "short_name": "testeImpressao",
+  "url": "http://apps.mercadolivre.com.br/testeimpressao",
+  "callback_url": "https://pscip.vercel.app/",
+  "callback_urls": [
+    "https://pscip.vercel.app/"
+  ],
+  "sandbox_mode": false,
+  "project_id": null,
+  "active": true,
+  "max_requests_per_hour": 18000,
+  "scopes": [
+    "offline_access",
+    "write",
+    "read"
+  ],
+  "notifications_callback_url": null,
+  "notifications_topics": [ ],
+  "domains": [ ],
+  "certification_status": "not_certified",
+  "allow_flow": [
+    "authorization_code",
+    "refresh_token"
+  ],
+  "token_type": "",
+  "use_pkce": false,
+  "date_created": "2024-07-20T18:03:27.000-04:00",
+  "blocked": false,
+  "blocked_date": "",
+  "blocked_reason": "",
+  "partial_blocked": {
+    "blocked": false,
+    "blocked_date": null,
+    "blocked_reason": "",
+    "origin_operation": ""
+  },
+  "disabled": false,
+  "disabled_date": "",
+  "traceability_created": {
+    "application": "platsec-applications-dev-mngr",
+    "scope": "prod",
+    "user": "",
+    "date": "2024-07-20T18:03:27.689-04:00",
+    "action_type": "SaveApplication"
+  },
+  "traceability_updated": {
+    "application": "platsec-applications-dev-mngr",
+    "scope": "prod",
+    "user": "",
+    "date": "2024-07-20T18:05:36.989-04:00",
+    "action_type": "UpdateApplication"
+  }
+}
