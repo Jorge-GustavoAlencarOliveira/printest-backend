@@ -2,3 +2,5 @@
 .env
 
 dados.txt
+
+.serviceAccountKey.json
