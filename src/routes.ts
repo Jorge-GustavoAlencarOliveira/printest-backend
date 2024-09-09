@@ -6,6 +6,11 @@ import { isAuthenticated } from './middlewares/isAuthenticated';
 import { ValidatedToken } from './actions/authSession';
 const router = Router();
 
+type SelectedOrdersProps = {
+  order_id: number;
+  shipping_id: number;
+};
+
 router.get('/', isAuthenticated , async (request: Request, response: Response) => {
   const authorizationHeader = request.headers.authorization;
   const [, token] = authorizationHeader.split(' ');
@@ -14,37 +19,75 @@ router.get('/', isAuthenticated , async (request: Request, response: Response) =
 })
 
 router.post('/print', isAuthenticated, async (request: Request, response: Response) => {
- 
-  const { order_id, shipping_id, token } = request.body;
-
-  const pdfBuffer = await zipFile(shipping_id, token)
-
-  const order = await orderDetails(order_id, token)
-
-  const declarationContent = await pdfmakeGenerate(order);
-
-  const firstPdfDoc = await PDFDocument.load(pdfBuffer);
-  const secondPdfDoc = await PDFDocument.load(declarationContent);
-
+  const body = request.body;
+  const token = body.token;
+  const selectOrders = body.selectedOrders as SelectedOrdersProps[];
+  // Cria um novo documento PDF
   const doc = await PDFDocument.create();
 
-  const [firstPage] = await doc.copyPages(firstPdfDoc, [0]);
-  const [secondPage] = await doc.copyPages(secondPdfDoc, [0]);
+  for (const { shipping_id, order_id } of selectOrders) {
+      // Gera o PDF para o shipping_id e order_id
+      const pdfBuffer = await zipFile(shipping_id, token);
+      const order = await orderDetails(order_id, token);
+      const declarationContent = await pdfmakeGenerate(order);
 
-  doc.addPage(firstPage);
-  doc.insertPage(1, secondPage);
+      // Carrega os PDFs gerados
+      const labelPdfDoc = await PDFDocument.load(pdfBuffer);
+      const declarationPdfDoc = await PDFDocument.load(declarationContent);
 
+      // Copia as páginas dos PDFs para o documento principal
+      const firstPages = await doc.copyPages(labelPdfDoc, labelPdfDoc.getPageIndices());
+      firstPages.forEach(page => doc.addPage(page));
+
+      const secondPages = await doc.copyPages(declarationPdfDoc, declarationPdfDoc.getPageIndices());
+      secondPages.forEach(page => doc.addPage(page));
+  }
+
+  // Salva o documento PDF final
   const pdfBytes = await doc.save();
-  
 
+  // Configura a resposta HTTP para retornar o PDF como um arquivo para download
   response.set({
-    'Content-Type': 'application/pdf',
-    'Content-Disposition': 'attachment; filename="merged.pdf"',
-    'Content-Length': pdfBytes.length,
+      'Content-Type': 'application/pdf',
+      'Content-Disposition': 'attachment; filename="merged.pdf"',
+      'Content-Length': pdfBytes.length,
   });
 
   response.end(pdfBytes);
 });
+
+// router.post('/print', isAuthenticated, async (request: Request, response: Response) => {
+ 
+//   const { order_id, shipping_id, token } = request.body;
+
+//   const pdfBuffer = await zipFile(shipping_id, token)
+
+//   const order = await orderDetails(order_id, token)
+
+//   const declarationContent = await pdfmakeGenerate(order);
+
+//   const firstPdfDoc = await PDFDocument.load(pdfBuffer);
+//   const secondPdfDoc = await PDFDocument.load(declarationContent);
+
+//   const doc = await PDFDocument.create();
+
+//   const [firstPage] = await doc.copyPages(firstPdfDoc, [0]);
+//   const [secondPage] = await doc.copyPages(secondPdfDoc, [0]);
+
+//   doc.addPage(firstPage);
+//   doc.insertPage(1, secondPage);
+
+//   const pdfBytes = await doc.save();
+  
+
+//   response.set({
+//     'Content-Type': 'application/pdf',
+//     'Content-Disposition': 'attachment; filename="merged.pdf"',
+//     'Content-Length': pdfBytes.length,
+//   });
+
+//   response.end(pdfBytes);
+// });
 
 // routes.get('/shipping', async (Request: Request, res: Response) => {
 //   try {
