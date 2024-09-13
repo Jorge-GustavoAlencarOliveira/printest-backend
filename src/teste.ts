@@ -12,9 +12,8 @@ export async function zipFile(shipping_id: number, access_token: string) {
       },
     },
   );
-
-  if (!apiResponse.ok) {
-    throw new Error(`API response error: ${apiResponse.status}`);
+  if (apiResponse.status === 400) {
+    return new Error(`API response error: ${apiResponse.status}`);
   }
 
   const zipArrayBuffer = await apiResponse.arrayBuffer();
@@ -94,6 +93,7 @@ export async function orderDetails(order_id: number, access_token: string) {
   }
 
   const dataShipping = (await responseShipping.json()) as Shipment;
+
 
   const responseBilling = await fetch(
     `https://api.mercadolibre.com/orders/${order_id}/billing_info`,

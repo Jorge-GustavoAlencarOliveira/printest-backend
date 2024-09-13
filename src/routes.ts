@@ -31,6 +31,8 @@ router.post('/print', isAuthenticated, async (request: Request, response: Respon
       const order = await orderDetails(order_id, token);
       const declarationContent = await pdfmakeGenerate(order);
 
+      if(pdfBuffer instanceof Error) return response.status(500).json(pdfBuffer.message)
+
       // Carrega os PDFs gerados
       const labelPdfDoc = await PDFDocument.load(pdfBuffer);
       const declarationPdfDoc = await PDFDocument.load(declarationContent);
