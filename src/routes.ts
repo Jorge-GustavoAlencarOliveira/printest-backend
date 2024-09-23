@@ -1,10 +1,14 @@
 import { Request, Response, Router } from 'express';
 import { PDFDocument } from 'pdf-lib';
 import { pdfmakeGenerate } from './utils/pdfmakegenerate';
-import { orderDetails, zipFile } from './teste';
+import { orderDetails, printZipFile, zipFile } from './teste';
 import { isAuthenticated } from './middlewares/isAuthenticated';
 import { ValidatedToken } from './actions/authSession';
+import multer from 'multer';
+import { MulterRequest } from './types/express';
+
 const router = Router();
+const upload = multer()
 
 type SelectedOrdersProps = {
   order_id: number;
@@ -57,6 +61,32 @@ router.post('/print', isAuthenticated, async (request: Request, response: Respon
 
   response.end(pdfBytes);
 });
+
+router.post('/printlabel', upload.single('file'), async (request: MulterRequest, response:Response) => {
+  try {
+    // O arquivo enviado estará disponível como `request.file`
+    const { file } = request;
+
+    if (!file || !file.buffer) {
+      return response.status(400).send('Nenhum arquivo enviado.');
+    }
+
+    // Chama a função printZipFile passando o buffer do arquivo ZIP
+    const pdfBytes = await printZipFile(file.buffer);
+
+    // Envia o PDF gerado como resposta
+    response.set({
+      'Content-Type': 'application/pdf',
+      'Content-Disposition': 'attachment; filename="label.pdf"',
+      'Content-Length': pdfBytes.length,
+    });
+
+    response.end(pdfBytes);
+  } catch (error) {
+    console.error('Erro ao processar o arquivo:', error);
+    response.status(500).send('Erro interno do servidor.');
+  }
+})
 
 // router.post('/print', isAuthenticated, async (request: Request, response: Response) => {
  

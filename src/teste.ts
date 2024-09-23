@@ -137,3 +137,32 @@ export async function orderDetails(order_id: number, access_token: string) {
 
   return dataDeclaration;
 }
+
+
+
+export async function printZipFile (importFile: Buffer){
+
+  const directory = await unzipper.Open.buffer(importFile);
+
+  const file = directory.files.find((file) => file.path.endsWith('.txt'));
+
+  const fileBuffer = await file.buffer();
+  const fileContent = fileBuffer.toString('utf8');
+
+  const url = 'http://api.labelary.com/v1/printers/8dpmm/labels/4x6/0/';
+  const responseLabel = await fetch(url, {
+    method: 'POST',
+    headers: {
+      Accept: 'application/pdf',
+      'Content-Type': 'application/x-www-form-urlencoded',
+    },
+    body: fileContent,
+  });
+
+  if (!responseLabel.ok) {
+    throw new Error(`Erro na requisição: ${responseLabel.statusText}`);
+  }
+
+  const arrayBuffer = await responseLabel.arrayBuffer();
+  return Buffer.from(arrayBuffer);
+}
