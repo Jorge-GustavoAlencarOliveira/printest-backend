@@ -140,14 +140,27 @@ export async function orderDetails(order_id: number, access_token: string) {
 
 
 
-export async function printZipFile (importFile: Buffer){
+export async function printFile (importFile: Buffer, mimeType: string){
 
-  const directory = await unzipper.Open.buffer(importFile);
+  let fileContent: string;
 
-  const file = directory.files.find((file) => file.path.endsWith('.txt'));
+  if (mimeType === 'application/x-zip-compressed') {
+    const directory = await unzipper.Open.buffer(importFile);
+    const file = directory.files.find((file) => file.path.endsWith('.txt'));
 
-  const fileBuffer = await file.buffer();
-  const fileContent = fileBuffer.toString('utf8');
+    if (!file) {
+      throw new Error('Nenhum arquivo .txt encontrado no arquivo .zip');
+    }
+
+    const fileBuffer = await file.buffer();
+    fileContent = fileBuffer.toString('utf8');
+  }
+  // Se o arquivo for .txt
+  else if (mimeType === 'text/plain') {
+    fileContent = importFile.toString('utf8');
+  } else {
+    throw new Error('Tipo de arquivo não suportado');
+  }
 
   const url = 'http://api.labelary.com/v1/printers/8dpmm/labels/4x6/0/';
   const responseLabel = await fetch(url, {

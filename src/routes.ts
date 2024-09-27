@@ -1,6 +1,6 @@
 import { Router } from 'express';
-import { isAuthenticated } from './middlewares/isAuthenticated';
 import multer from 'multer';
+import { isAuthenticated } from './middlewares/isAuthenticated';
 import { PrintLabelController } from './controllers/app/printLabel';
 import { AuthSessionController } from './controllers/user/authSession';
 import { LabelByZip } from './controllers/app/labelByZip';
@@ -20,6 +20,17 @@ router.post(
 );
 
 export { router };
+
+
+
+
+
+
+
+
+
+
+
 
 
 

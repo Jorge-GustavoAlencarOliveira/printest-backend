@@ -1,21 +1,20 @@
 import { Response } from 'express';
 import { MulterRequest } from '../../types/multer';
-import { printZipFile } from '../../teste';
+import { printFile } from '../../teste';
 
 export class LabelByZip {
   async handle(request: MulterRequest, response: Response) {
     try {
-      // O arquivo enviado estará disponível como `request.file`
-      const { file } = request;
 
+      const { file } = request;
+      const { type } = request.body;
+      
       if (!file || !file.buffer) {
         return response.status(400).send('Nenhum arquivo enviado.');
       }
 
-      // Chama a função printZipFile passando o buffer do arquivo ZIP
-      const pdfBytes = await printZipFile(file.buffer);
+      const pdfBytes = await printFile(file.buffer, type);
 
-      // Envia o PDF gerado como resposta
       response.set({
         'Content-Type': 'application/pdf',
         'Content-Disposition': 'attachment; filename="label.pdf"',
